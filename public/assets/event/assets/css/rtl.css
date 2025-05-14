@@ -1,0 +1,70 @@
+body,
+.page-wrapper,
+.section-title,
+.card-body,
+.form-floating,
+.list-group-item {
+    text-align: right !important;
+}
+.form-floating > label {
+    right: 1rem;
+    left: auto;
+    text-align: right;
+}
+.form-select,
+.form-control {
+    direction: rtl !important;
+}
+.text-end {
+    text-align: left !important;
+}
+.message-box__left {
+    text-align: right;
+}
+.message-box__right .btn {
+    float: left !important;
+}
+.financial-advice__list-box-content h3,
+.financial-advice__list-box-content p,
+.financial-advice_-desc,
+.faq-one__list-box,
+.faq-one__list-box .text {
+    text-align: right !important;
+}
+.faq-one__experience-box {
+    text-align: center;
+}
+.section-title__title,
+.section-title__tagline,
+.header-p,
+.card-title {
+    text-align: right;
+}
+ul,
+ol {
+    padding-right: 1.5rem;
+    padding-left: 0;
+}
+
+/* for the event section 2 tabs */
+/* target only when the document is in RTL mode */
+html[dir="rtl"] .tab-buttons {
+    /* use flexbox so we can reverse the row order */
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center; /* keeps them centered */
+}
+
+/* fix the spacing between each tab */
+/* html[dir="rtl"] .tab-buttons .tab-btn { */
+/* margin: 0 0 0 1rem; move spacing to left instead of right */
+/* text-align: right; align text inside each tab */
+/* }  */
+
+/* if you’re using floats instead of flex */
+/* html[dir="rtl"] .tab-buttons .tab-btn {
+    float: right;
+    margin-right: 0; 
+    margin-left: 1rem; 
+} */
+
