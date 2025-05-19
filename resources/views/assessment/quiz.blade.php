@@ -3,309 +3,737 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Quiz</title>
+    <title>Personality Quiz</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('assets/assessment/quiz/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/assessment/quiz/css/owl.carousel.css') }}">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/assessment/quiz/css/animate.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/assessment/quiz/css/fontawesome-all.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/assessment/quiz/css/style.css') }}">
-
-    <style>
-        .actions.clearfix {
-            padding: 20px 40px;
-            margin-top: auto;
-            justify-content: space-between;
-            align-items: center;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
         }
 
-        .quiz-option-selector ul {
-            max-width: 1400px; 
-            margin: 0 auto; 
-            padding: 0;
-            list-style: none;
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .quiz-wrapper {
+            max-width: 1400px;
+            margin: 40px auto;
             display: flex;
             flex-wrap: wrap;
-
-            justify-content: center;
+            /* add this */
+            gap: 30px;
+            padding: 0 15px;
+            /* add some side padding for mobile */
         }
 
-        .quiz-option-selector ul li {
-            flex: 1 1 calc(50% - 20px);
-            /* Two per row */
-            display: flex;
-            align-items: stretch;
-            min-width: 250px; 
+        .quiz-main {
+            flex: 2.5;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
         }
 
-        .start-quiz-item {
+        .quiz-main::after {
+            content: "";
+            position: absolute;
+            bottom: 50px;
+            left: 0;
+            width: 500px;
+            height: 500px;
+            background-image: url('{{ asset('assets/assessment/quiz/img/riyadha-logo.png') }}');
+            background-repeat: no-repeat;
+            background-size: contain;
+            opacity: 0.07;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .quiz-sidebar {
+            flex: 0.7;
+            padding: 20px;
+            border-radius: 12px;
+
+            height: fit-content;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+        }
+
+        .quiz-header h2 {
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .timer-box,
+        .timer-box2 {
+            text-align: center;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.267);
+            background: #fff;
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .question-context {
+            background-color: #eaf0f6;
+            padding: 10px;
+            border-left: 5px solid #00B7E3;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .quiz-options label {
             display: flex;
             align-items: center;
             padding: 15px 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
             background: #fff;
-            transition: all 0.2s ease-in-out;
-            height: 100%;
-            font-size: 16px;
+            transition: all 0.3s ease;
         }
 
-        .exp-label {
+        .quiz-options label:hover {
+            border-color: #F58220;
+        }
+
+        .quiz-options input[type="radio"] {
+            display: none;
+        }
+
+        .quiz-options input[type="radio"]:checked+label {
+            border-color: #F58220;
+            background-color: #fff6ef;
+        }
+
+        .progress {
+            height: 18px;
+            background-color: #dbe9f1;
+            border-radius: 9px;
+        }
+
+        .progress-bar {
+            background-color: #00B7E3;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 60px;
+        }
+
+        .actions button,
+        .actions span {
             flex: 1;
-            padding-left: 10px;
-            word-break: break-word;
-            white-space: normal;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background-color: #F58220;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .quiz-question-list {
+            list-style: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.267);
+            background: #fff;
+        }
+
+        .quiz-question-list li {
+            background: #f4f4f4;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-square {
+            width: 42px;
+            height: 52px;
+            border: 2px solid #ccc;
+            color: #b1b0b0;
+            background-color: #f8f8f8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+
+        .quiz-options label {
+            position: relative;
+            padding-right: 50px;
+            /* Reserve space for the circle */
+            z-index: 0;
+            /* Ensure content stays above tick unless overridden */
+        }
+
+        .quiz-options input[type="radio"]:checked+label .option-square {
+            background-color: #F58220;
+            color: white;
+            border: 2px solid #F58220;
+        }
+
+        .quiz-options input[type="radio"]:checked+label::after {
+            content: "\f00c";
+            /* Font Awesome check icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #fff;
+            background-color: #F58220;
+            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .timer-visual {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .countdown-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .countdown-svg .track {
+            fill: none;
+            stroke: #e6e6e6;
+            stroke-width: 8;
+        }
+
+        .countdown-svg .progress {
+            fill: none;
+            stroke: #F58220;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 282.6;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .countdown-svg text {
+            fill: #F58220;
+            font-size: 16px;
+            font-weight: bold;
+            transform: rotate(90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .quiz-question-item.answered {
+            background-color: #fff1e6;
+            border: 1px solid #F58220;
+            color: #F58220;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .quiz-question-item.answered::after {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            background-color: #F58220;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .challenge-note {
+            background-color: #d3cfcf;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .qno {
+            background-color: #f59948;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .question-type {
+            margin-bottom: 14px;
+        }
+
+        @media (max-width: 768px) {
+
+            .quiz-main,
+            .quiz-sidebar {
+                flex: 1 1 100%;
+                max-width: 100%;
+                order: -1;
+            }
+
+            .quiz-sidebar {
+                order: -1;
+                /* move sidebar to the top */
+            }
+
+            .quiz-main {
+                order: 0;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .quiz-options label {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .quiz-options label .option-square {
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+
+            .quiz-question-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                padding: 18px 5px;
+                justify-content: center;
+            }
+
+            .quiz-question-list li {
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                background-color: #f0f0f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 8px;
+                font-weight: bold;
+                margin: 4px;
+                padding: 0;
+                position: relative;
+                transition: background-color 0.3s ease;
+            }
+
+
+            .quiz-question-list li::after {
+                content: '';
+            }
+
+            .quiz-question-list li.answered {
+                background-color: #F58220;
+                color: white;
+                font-size: 0;
+                /* hide the number visually */
+            }
+
+            .quiz-question-list li.answered::after {
+                content: '\f00c';
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                font-size: 14px;
+                color: #ffffff;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quiz-header h2 {
+                font-size: 20px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .question-context {
+                font-size: 0.9rem;
+            }
+
+            .timer-visual {
+                width: 80px;
+                height: 80px;
+            }
+
+            .countdown-svg text {
+                font-size: 14px;
+            }
+
+        }
+
+        .mobile-progress-circle {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            position: relative;
+            margin-top: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .timer-box2 {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .progress-wrapper {
+                display: none;
+            }
+        }
+
+        .mobile-progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring .track {
+            fill: none;
+            stroke: #e6e6e6;
+            stroke-width: 8;
+        }
+
+        .progress-ring .fill {
+            fill: none;
+            stroke: #00B7E3;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 282.6;
+            stroke-dashoffset: 282.6;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .progress-ring text {
+            fill: #00B7E3;
+            font-size: 16px;
+            font-weight: bold;
+            transform: rotate(90deg);
+            transform-origin: 50% 50%;
         }
     </style>
+</head>
 
 <body>
-    <div class="quiz-top-area text-center">
-        <h1>Personality Quiz</h1>
-        <div class="quiz-countdown text-center ul-li">
-            <ul>
-                <li class="hours">
-                    <span class="count-down-number"></span>
-                    <span class="count-unit">Hours</span>
-                </li>
+    <div class="quiz-wrapper">
+        <div class="quiz-main">
+            <div class="quiz-header">
+                <h2>Personality Quiz</h2>
+            </div>
 
-                <li class="minutes">
-                    <span class="count-down-number"></span>
-                    <span class="count-unit">Min</span>
-                </li>
+            <form method="POST" action="{{ route('assessment.quiz.submit') }}">
+                @csrf
+                @foreach ($questions as $index => $q)
+                    <div class="question-section" id="question-{{ $index }}"
+                        style="display: {{ $index === 0 ? 'block' : 'none' }}">
+                        @if (!empty($q['question_type']))
+                            <div class="question-type" style="font-size: 1.1rem;">
+                                <span class="qno"> Q{{ $index + 1 }}.</span>
+                                <strong>{{ ucfirst($q['question_type']) }}</strong>
 
-                <li class="seconds">
-                    <span class="count-down-number"></span>
-                    <span class="count-unit">Sec</span>
-                </li>
+                            </div>
+                        @endif
+
+                        @if (!empty($q['text']))
+                            <div class="question-context">
+                                {{ $q['text'] }}
+                            </div>
+                        @endif
+
+                        <div class="question-text">
+                            {{ $q['question'] }}
+                        </div>
+
+                        <div class="quiz-options">
+                            @foreach ($q['options'] as $optIndex => $option)
+                                <div>
+                                    <input type="radio" name="answers[{{ $q['id'] }}]"
+                                        value="{{ $option }}" id="q{{ $q['id'] }}_opt{{ $optIndex }}"
+                                        required>
+                                    <label for="q{{ $q['id'] }}_opt{{ $optIndex }}">
+                                        <span class="option-square">{{ chr(65 + $optIndex) }}</span>
+                                        <span class="option-text">{{ $option }}</span>
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                        @if (!empty($q['challenge']))
+                            <div class="challenge-note">
+                                <strong>Challenge: </strong>
+                                {!! highlightChallengeTerms($q['challenge']) !!}
+                            </div>
+                        @endif
+                        <div class="actions">
+                            @if ($index > 0)
+                                <span class="js-btn-prev" data-target="{{ $index - 1 }}">Previous Question</span>
+                            @endif
+                            @if ($index < count($questions) - 1)
+                                <span class="js-btn-next ml-auto" data-target="{{ $index + 1 }}">Next
+                                    Question</span>
+                            @else
+                                <button type="submit">Submit</button>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </form>
+
+            <div class="mt-4 progress-wrapper">
+                <div class="progress">
+                    <div class="progress-bar" id="quiz-progress" role="progressbar" style="width: 0%">
+                        0% complete
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-sidebar">
+            <div class="timer-box">
+                <div class="timer-visual">
+                    <svg class="countdown-svg" viewBox="0 0 100 100">
+                        <circle class="track" cx="50" cy="50" r="45" />
+                        <circle class="progress" cx="50" cy="50" r="45" />
+                        <text id="timer" x="50" y="55" text-anchor="middle" dominant-baseline="middle">05:00</text>
+                    </svg>
+                </div>
+
+                <div class="mt-2 text-muted small">Timer Remaining</div>
+
+
+            </div>
+            {{-- <div class="timer-box2">
+                <div class="text-muted small text-center mt-1">Quiz Progress</div>
+                <div class="mobile-progress-circle d-md-none mt-4">
+                    <svg class="progress-ring" viewBox="0 0 100 100">
+                        <circle class="track" cx="50" cy="50" r="45" />
+                        <circle class="fill" cx="50" cy="50" r="45" />
+                        <text id="progress-label" x="50" y="55" text-anchor="middle"
+                            dominant-baseline="middle">0%</text>
+                    </svg>
+
+                </div>
+            </div> --}}
+
+
+            <ul class="quiz-question-list">
+                @foreach ($questions as $i => $q)
+                    <li class="quiz-question-item" data-index="{{ $i }}"
+                        data-question-id="{{ $q['id'] }}">
+                        <span class="d-none d-md-inline">Question {{ $i + 1 }}</span>
+                        <span class="d-inline d-md-none">Q{{ $i + 1 }}</span>
+                    </li>
+                @endforeach
             </ul>
         </div>
-    </div>
-    <div class="wrapper position-relative">
-        <div class="wizard-content-1 clearfix">
-            <div class="steps d-inline-block position-absolute clearfix">
-                <ul class="tablist multisteps-form__progress">
-                    <li class="multisteps-form__progress-btn js-active current"></li>
-                    <li class="multisteps-form__progress-btn"></li>
-                    <li class="multisteps-form__progress-btn"></li>
-                    <li class="multisteps-form__progress-btn"></li>
-                    <li class="multisteps-form__progress-btn"></li>
-                </ul>
-            </div>
-            <div class="step-inner-content clearfix position-relative">
-                <form method="POST" action="{{ route('assessment.quiz.submit') }}" id="wizard"
-                    class="multisteps-form__form">
-                    @csrf
-                    <div class="form-area position-relative">
-                        @foreach ($questions as $index => $q)
-                            <div class="multisteps-form__panel {{ $index === 0 ? 'js-active' : '' }}"
-                                data-animation="fadeIn">
-                                <div class="wizard-forms clearfix position-relative">
-                                    <div class="quiz-title text-center mx-auto px-3">
-                                        <span>Question {{ $index + 1 }}. </span>
-                                        <span>{{ $q['question_type'] }} </span>
-                                        <p>
-                                            {{ $q['text'] }}
-                                        </p>
-                                        <h2>{{ $q['question'] }}</h2>
-                                    </div>
-
-                                    <div class="quiz-option-selector clearfix">
-                                        <ul>
-                                            @foreach ($q['options'] as $optIndex => $option)
-                                                @if (!empty($q['id']))
-                                                    <li>
-                                                        <label class="start-quiz-item">
-                                                            <input type="radio" name="answers[{{ $q['id'] }}]"
-                                                                value="{{ $option }}" class="exp-option-box"
-                                                                required>
-                                                            <span
-                                                                class="exp-number text-uppercase">{{ chr(65 + $optIndex) }}</span>
-                                                            <span class="exp-label">{{ $option }}</span>
-                                                            <span class="checkmark-border"></span>
-                                                        </label>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </ul>
-                                    </div>
-
-                                    <div class="bottom-vector">
-                                        <img src="{{ asset('assets/assessment/quiz/img/bq1.png') }}" alt="">
-                                    </div>
-
-                                    <div class="quiz-progress-area">
-                                        <div class="progress">
-                                            @php $progress = (($index + 1) / count($questions)) * 100; @endphp
-                                            <div class="progress-bar position-relative"
-                                                style="width: {{ $progress }}%">
-                                                <span>{{ round($progress) }}% complete, keep it up!</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="actions clearfix">
-                                        <ul class="d-flex justify-content-between align-items-center">
-                                            @if ($index !== 0)
-                                                <li>
-                                                    <span class="js-btn-prev" title="PREV">Previous Question</span>
-                                                </li>
-                                            @endif
-                                            <li class="ml-auto">
-                                                @if ($index !== count($questions) - 1)
-                                                    <span class="js-btn-next" title="NEXT">Next Question</span>
-                                                @else
-                                                    <button class="js-btn-submit"
-                                                        type="submit"><span>SUBMIT</span></button>
-                                                @endif
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="{{ asset('assets/assessment/quiz/js/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{ asset('assets/assessment/quiz/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('assets/assessment/quiz/js/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/assessment/quiz/js/owl.carousel.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script src="{{ asset('assets/assessment/quiz/js/form-step.js') }}"></script>
-    <script src="{{ asset('assets/assessment/quiz/js/jquery.validate.min.js') }}"></script>
-    {{-- <script src="{{ asset('assets/assessment/quiz/js/main.js') }}"></script> --}}
-    {{-- <script src="{{ asset('assets/assessment/quiz/js/switch.js') }}"></script>  --}}
-
-    {{-- <script>
-        (function() {
-
-            "use strict";
-
-            var Wizard = {
-                init: function() {
-                    this.Basic.init();
-                },
-
-                Basic: {
-                    init: function() {
-
-                        this.preloader();
-                        this.countDown();
-
-                    },
-                    preloader: function() {
-                        jQuery(window).on('load', function() {
-                            jQuery('#preloader').fadeOut('slow', function() {
-                                jQuery(this).remove();
-                            });
-                        });
-                    },
-                    countDown: function() {
-                        if ($('.quiz-countdown').length > 0) {
-                            // var deadlineDate = new Date('dec 26, 2020 23:59:59').getTime(); 
-                            var deadlineDate = new Date('dec 26, 2020 23:59:59').getTime();
-                            // var countdownDays = document.querySelector('.days .count-down-number');
-                            var countdownHours = document.querySelector('.hours .count-down-number');
-                            var countdownMinutes = document.querySelector('.minutes .count-down-number');
-                            var countdownSeconds = document.querySelector('.seconds .count-down-number');
-                            setInterval(function() {
-                                var currentDate = new Date().getTime();
-                                var distance = deadlineDate - currentDate;
-                                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 *
-                                    60));
-                                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                                // countdownDays.innerHTML = days;
-                                countdownHours.innerHTML = hours;
-                                countdownMinutes.innerHTML = minutes;
-                                countdownSeconds.innerHTML = seconds;
-                            }, 1000);
-
-                        };
-                    },
+        @php
+            function highlightChallengeTerms($text)
+            {
+                $keywords = ['most', 'least', 'always', 'never', 'important', 'significant', 'challenging'];
+                foreach ($keywords as $word) {
+                    $text = preg_replace(
+                        "/\b($word)\b/i",
+                        '<span style="color: #F58220; font-weight: bold;">$1</span>',
+                        $text,
+                    );
                 }
+                return $text;
             }
-            jQuery(document).ready(function() {
-                Wizard.init();
-            });
-
-        })();
-    </script> --}}
+        @endphp
+    </div>
 
     <script>
-        const quizStartTime = {{ $startTime }}; // e.g., 1715000000
-        const quizDurationMinutes = 330; // fixed duration
-        // const deadline = quizStartTime * 1000 + quizDurationMinutes * 60 * 1000; // convert to milliseconds
+        document.querySelectorAll('.js-btn-next').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let target = btn.dataset.target;
+                document.querySelectorAll('.question-section').forEach(q => q.style.display = 'none');
+                document.getElementById(`question-${target}`).style.display = 'block';
+                updateProgress(target);
+            });
+        });
 
-        (function() {
-            "use strict";
+        document.querySelectorAll('.js-btn-prev').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let target = btn.dataset.target;
+                document.querySelectorAll('.question-section').forEach(q => q.style.display = 'none');
+                document.getElementById(`question-${target}`).style.display = 'block';
+                updateProgress(target);
+            });
+        });
 
-            var Wizard = {
-                init: function() {
-                    this.Basic.init();
-                },
+        // function updateProgress() {
+        //     const total = {{ count($questions) }};
+        //     const answered = document.querySelectorAll('.quiz-options input[type="radio"]:checked').length;
+        //     const progress = (answered / total) * 100;
+        //     const rounded = Math.round(progress);
 
-                Basic: {
-                    init: function() {
-                        this.preloader();
-                        this.countDown(quizStartTime); // <--- Using the JS variable
-                    },
+        //     const progressBar = document.getElementById('quiz-progress');
+        //     progressBar.style.width = `${rounded}%`;
 
-                    preloader: function() {
-                        jQuery(window).on('load', function() {
-                            jQuery('#preloader').fadeOut('slow', function() {
-                                jQuery(this).remove();
-                            });
-                        });
-                    },
+        //     if (rounded <= 0) {
+        //         progressBar.textContent = '';
+        //     } else if (rounded < 13) {
+        //         progressBar.textContent = `${rounded}%`;
+        //     } else {
+        //         progressBar.textContent = `${rounded}% complete`;
+        //     }
 
-                    countDown: function(startTimestamp) {
-                        // const deadline = startTimestamp * 1000 + (30 * 60 * 1000);   
-                        const deadline = quizStartTime * 1000 + quizDurationMinutes * 60 *
-                            1000; // convert to milliseconds  
-                        const countdownHours = document.querySelector('.hours .count-down-number');
-                        const countdownMinutes = document.querySelector('.minutes .count-down-number');
-                        const countdownSeconds = document.querySelector('.seconds .count-down-number');
-                        const form = document.getElementById('wizard');
 
-                        const interval = setInterval(function() {
-                            const now = new Date().getTime();
-                            let timeLeft = deadline - now;
+        // }
+        function updateProgress() {
+            const totalQuestions = document.querySelectorAll('.question-section').length;
+            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
 
-                            if (timeLeft <= 0) {
-                                clearInterval(interval);
-                                countdownHours.innerHTML = '00';
-                                countdownMinutes.innerHTML = '00';
-                                countdownSeconds.innerHTML = '00';
-                                if (form) form.submit();
-                                return;
-                            }
+            const percentComplete = Math.round((answeredQuestions / totalQuestions) * 100);
 
-                            const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-                            const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
-                            const seconds = Math.floor((timeLeft / 1000) % 60);
+            // Update horizontal progress bar
+            const progressBar = document.getElementById('quiz-progress');
+            progressBar.style.width = percentComplete + '%';
+            progressBar.innerText = percentComplete + '% Done';
 
-                            countdownHours.innerHTML = String(hours).padStart(2, '0');
-                            countdownMinutes.innerHTML = String(minutes).padStart(2, '0');
-                            countdownSeconds.innerHTML = String(seconds).padStart(2, '0');
-                        }, 1000);
+            // Update circular progress ring
+            const ring = document.querySelector('.progress-ring .fill');
+            const progressLabel = document.getElementById('progress-label');
+
+            const radius = 45;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percentComplete / 100) * circumference;
+
+            if (ring) {
+                ring.style.strokeDashoffset = offset;
+            }
+
+            if (progressLabel) {
+                progressLabel.textContent = percentComplete + '%';
+            }
+        }
+
+        // Attach to change event for all radio buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.addEventListener('change', updateProgress);
+            });
+
+        });
+
+
+
+        let totalSeconds = 300; // 5 minutes
+        let seconds = totalSeconds;
+
+        const radius = 45;
+        const circumference = 2 * Math.PI * radius;
+        const progressCircle = document.querySelector('.countdown-svg .progress');
+        const timerText = document.getElementById('timer');
+
+        progressCircle.style.strokeDasharray = `${circumference}`;
+        progressCircle.style.strokeDashoffset = `0`;
+
+        function updateTimerVisual(percentRemaining) {
+            const offset = circumference * (1 - percentRemaining / 100);
+            progressCircle.style.strokeDashoffset = offset;
+        }
+
+        const interval = setInterval(() => {
+            if (seconds <= 0) {
+                clearInterval(interval);
+                timerText.textContent = "00:00";
+                return;
+            }
+
+            seconds--;
+
+            const min = String(Math.floor(seconds / 60)).padStart(2, '0');
+            const sec = String(seconds % 60).padStart(2, '0');
+            timerText.textContent = `${min}:${sec}`;
+
+            let percent = (seconds / totalSeconds) * 100;
+            updateTimerVisual(percent);
+        }, 1000);
+        document.querySelectorAll('.quiz-options input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const inputName = this.name; // e.g., "answers[5]"
+                const match = inputName.match(/answers\[(\d+)\]/);
+                if (match) {
+                    const questionId = match[1];
+
+                    // Find the correct sidebar item using data-question-id
+                    const navItem = document.querySelector(
+                        `.quiz-question-item[data-question-id="${questionId}"]`);
+                    if (navItem) {
+                        navItem.classList.add('answered');
                     }
                 }
-            };
-
-            jQuery(document).ready(function() {
-                Wizard.init();
+                updateProgress();
             });
-        })();
+        });
+
+        // Optional: Clicking question item navigates to it
+        document.querySelectorAll('.quiz-question-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const index = item.dataset.index;
+                document.querySelectorAll('.question-section').forEach(q => q.style.display = 'none');
+                document.getElementById(`question-${index}`).style.display = 'block';
+                updateProgress(index);
+            });
+        });
     </script>
-
-
 </body>
 
 </html>
